@@ -1,0 +1,17 @@
+name: center_spot_example
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  center_spot:
+    path: ../
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
