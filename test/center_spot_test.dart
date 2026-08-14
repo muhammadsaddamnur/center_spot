@@ -89,4 +89,79 @@ void main() {
 
     expect(mediaSize, const Size(321, 654));
   });
+
+  testWidgets('overrides only the host MediaQuery size', (tester) async {
+    MediaQueryData? mediaData;
+
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(
+          size: Size(1000, 1000),
+          devicePixelRatio: 2,
+          padding: EdgeInsets.only(top: 24),
+        ),
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: CenterSpot(
+            preset: const ViewportPreset(name: 'Test', size: Size(400, 800)),
+            child: Builder(
+              builder: (context) {
+                mediaData = MediaQuery.of(context);
+                return const SizedBox.expand();
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(mediaData?.size, const Size(400, 800));
+    expect(mediaData?.devicePixelRatio, 2);
+    expect(mediaData?.padding, const EdgeInsets.only(top: 24));
+  });
+
+  testWidgets('honors alignment, background color, and clip behavior', (
+    tester,
+  ) async {
+    const contentKey = Key('content');
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1000, 1000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: CenterSpot(
+          preset: ViewportPreset(name: 'Test', size: Size(400, 800)),
+          alignment: Alignment.topLeft,
+          backgroundColor: Colors.blue,
+          clipBehavior: Clip.antiAlias,
+          child: ColoredBox(key: contentKey, color: Colors.white),
+        ),
+      ),
+    );
+
+    final content = tester.renderObject<RenderBox>(find.byKey(contentKey));
+    final background = tester.widget<ColoredBox>(find.byType(ColoredBox).first);
+    final clip = tester.widget<ClipRect>(find.byType(ClipRect));
+
+    expect(content.localToGlobal(Offset.zero), Offset.zero);
+    expect(background.color, Colors.blue);
+    expect(clip.clipBehavior, Clip.antiAlias);
+  });
+
+  testWidgets('rejects a non-positive preset size', (tester) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: CenterSpot(
+          preset: ViewportPreset(name: 'Invalid', size: Size.zero),
+          child: SizedBox(),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isAssertionError);
+  });
 }

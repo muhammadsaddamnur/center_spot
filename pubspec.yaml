@@ -1,11 +1,22 @@
 name: center_spot
-description: A minimal, frame-free Flutter viewport preview centered on a preset size.
+description: A frame-free Flutter viewport preview for testing responsive layouts at fixed logical sizes.
 version: 0.1.0
+homepage: https://github.com/muhammadsaddamnur/center_spot
 repository: https://github.com/muhammadsaddamnur/center_spot
+issue_tracker: https://github.com/muhammadsaddamnur/center_spot/issues
 topics:
   - preview
   - responsive
+  - viewport
   - development
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
 
 environment:
   sdk: ^3.11.4
